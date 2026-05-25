@@ -1,3 +1,6 @@
+#ifndef ARENA_CQDLULIS_H
+#define ARENA_CQDLULIS_H
+
 #include <stdlib.h>
 
 typedef struct{
@@ -6,38 +9,48 @@ typedef struct{
     unsigned char *memory;
 }arena;
 
-arena setArena(size_t size){
+static arena setArena(size_t size); // seta arena
+static void *arenaAlloc(arena *arena, size_t size); // aloca espaço na arena
+static void freeArena(arena *arena); // libera espaço da arena
+static void resetArena(arena *arena); // reseta o offset para zero sem limpar a arena
+
+static arena setArena(size_t size){
 
     arena a;
 
     a.size = size;
     a.offset = 0;
     a.memory = malloc(size);
-    if(a.memory == NULL) {a.size = 0;}
+    if(a.memory == NULL) {
+        a.size = 0;
+        a.offset = 0;
+    }
 
     return a;
     
 }
 
-void *arenaAlloc(arena *arena, size_t size){
-    if(arena->offset + size > arena->size){
+static void *arenaAlloc(arena *arena, size_t size){
+    if(size > arena->size - arena->offset){
         return NULL;
     }
 
-    char *ptr = (char*)arena->memory + arena->offset;
+    unsigned char *ptr = arena->memory + arena->offset;
     arena->offset += size;
 
     return ptr;
 
 }
 
-void freeArena(arena *arena){
+static void freeArena(arena *arena){
     free(arena->memory);    
     arena->offset = 0;
     arena->size = 0;
     arena->memory = NULL;
 }
 
-void resetArena(arena *arena){
+static void resetArena(arena *arena){
     arena->offset = 0;
 }
+
+#endif
