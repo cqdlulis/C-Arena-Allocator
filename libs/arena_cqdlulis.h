@@ -24,7 +24,7 @@ void *arenaAlloc(arena *arena, size_t size){
         return NULL;
     }
 
-    void *ptr = arena->memory + arena->offset;
+    char *ptr = (char*)arena->memory + arena->offset;
     arena->offset += size;
 
     return ptr;
